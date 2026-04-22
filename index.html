@@ -96,15 +96,10 @@
             <ul class="desktop-nav">
                 <li><a onclick="navigate('home')">Home</a></li>
                 <li><a onclick="navigate('cart')">Cart (<span id="d-cart">0</span>)</a></li>
-                
-                <!-- Shown when logged in -->
                 <li class="auth-show" id="desktop-user-display" style="background:#F3F4F6; padding:6px 12px; border-radius:20px; font-size:13px; font-weight:700; color:var(--text-dark);"></li>
-                
                 <li class="auth-show"><a onclick="navigate('library')" style="color:var(--primary); font-weight:800;">My Library</a></li>
                 <li class="admin-show"><a onclick="navigate('admin')" style="color:var(--secondary);">Admin</a></li>
                 <li class="auth-show"><a onclick="logout()" class="btn-glass" style="color:var(--text-light); border-color:var(--border-color);">Logout</a></li>
-                
-                <!-- Shown when logged out -->
                 <li class="guest-show"><a onclick="navigate('login')" class="btn-glass" style="background:var(--primary); color:white; border:none;">Login</a></li>
             </ul>
         </div>
@@ -135,19 +130,20 @@
             <h3 class="section-title">Checkout</h3>
             <div class="admin-grid">
                 <div class="box" style="text-align:center;">
-                    <h4>Scan to Pay</h4>
-                    <img id="payment-qr" src="https://placehold.co/200x200?text=Scan+to+Pay" style="width:200px; height:200px; border-radius:12px; margin:15px 0; object-fit:cover;">
-                    <div style="font-size:24px; font-weight:800; color:var(--primary);">Amount: ₹<span id="payment-total">0</span></div>
+                    <h4>Pay with JavaGoat Wallet</h4>
+                    <p style="font-size:12px; color:var(--text-light); margin:5px 0 15px;">Scan this dynamic QR code using your JavaGoat Points Wallet to auto-fill the payment details.</p>
+                    <img id="payment-qr" src="https://placehold.co/200x200?text=Loading+QR" style="width:200px; height:200px; border-radius:12px; margin:5px 0; object-fit:cover;">
+                    <div style="font-size:24px; font-weight:800; color:var(--primary); margin-top:10px;"><span id="payment-total">0</span> Pts</div>
                 </div>
                 <div class="box">
                     <form id="payment-form">
                         <h4>Verify Payment</h4>
-                        <p style="font-size:13px; color:var(--text-light); margin-bottom:15px;">After paying via UPI, enter your transaction reference number below.</p>
+                        <p style="font-size:13px; color:var(--text-light); margin-bottom:15px;">After sending points via JavaGoat Wallet, enter your transaction reference number below.</p>
                         <div class="form-group">
                             <label>Email Address</label>
                             <input type="email" id="payer_email" class="form-control" readonly style="background:#eee;">
                         </div>
-                        <div class="form-group"><label>UPI Ref No. (12 Digits)</label><input type="text" id="transaction_id" class="form-control" required></div>
+                        <div class="form-group"><label>Txn Ref No. (From Receipt)</label><input type="text" id="transaction_id" class="form-control" required></div>
                         <button type="submit" class="btn-main">Submit Verification</button>
                     </form>
                 </div>
@@ -176,41 +172,25 @@
 
             <!-- Dashboard Sub-tab -->
             <div id="admin-dashboard" class="admin-subview">
-                <div class="admin-grid">
-                    <div class="box">
-                        <h3><i class="fa-solid fa-upload"></i> Add Course</h3>
-                        <form id="add-course-form">
-                            <div class="form-group"><label>Course Title</label><input type="text" id="course_name" class="form-control" required></div>
-                            <div class="form-group"><label>Price (₹)</label><input type="number" id="course_price" class="form-control" required></div>
-                            <div class="form-group"><label>Short Description</label><textarea id="course_desc" class="form-control" required rows="2"></textarea></div>
-                            <div style="background:#F9FAFB; padding:15px; border-radius:12px; margin-bottom:15px; border:1px solid #E5E7EB;">
-                                
-                                <div class="form-group">
-                                    <label style="color:var(--primary);"><i class="fa-solid fa-image"></i> Upload Course Cover Image</label>
-                                    <input type="file" id="course_image_file" class="form-control" accept="image/*" required>
-                                </div>
-                                <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
-                                
-                                <div class="form-group" style="margin-bottom:0;">
-                                    <label style="color:var(--secondary);"><i class="fa-solid fa-file-pdf"></i> Downloadable File Path (GitHub PDF/ZIP)</label>
-                                    <input type="text" id="course_file_url" class="form-control" placeholder="e.g., ./files/course.pdf or https://..." required>
-                                </div>
-                            </div>
-                            <button type="submit" id="btn-add-course" class="btn-main">Publish Course</button>
-                        </form>
-                    </div>
-                    <div class="box">
-                        <h3>Update QR</h3>
-                        <form id="update-qr-form">
-                            <img id="admin-qr-preview" src="https://placehold.co/200x200?text=Scan+to+Pay" style="width:100px; height:100px; display:block; margin:0 auto 10px; border-radius:8px; object-fit:cover;">
-                            
+                <div class="box">
+                    <h3><i class="fa-solid fa-upload"></i> Add Course</h3>
+                    <form id="add-course-form">
+                        <div class="form-group"><label>Course Title</label><input type="text" id="course_name" class="form-control" required></div>
+                        <div class="form-group"><label>Price (Pts)</label><input type="number" id="course_price" class="form-control" required></div>
+                        <div class="form-group"><label>Short Description</label><textarea id="course_desc" class="form-control" required rows="2"></textarea></div>
+                        <div style="background:#F9FAFB; padding:15px; border-radius:12px; margin-bottom:15px; border:1px solid #E5E7EB;">
                             <div class="form-group">
-                                <label>Upload New QR Image</label>
-                                <input type="file" id="qr_file" class="form-control" accept="image/*" required>
+                                <label style="color:var(--primary);"><i class="fa-solid fa-image"></i> Upload Course Cover Image</label>
+                                <input type="file" id="course_image_file" class="form-control" accept="image/*" required>
                             </div>
-                            <button type="submit" id="btn-update-qr" class="btn-main" style="background:var(--text-dark);">Update QR</button>
-                        </form>
-                    </div>
+                            <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label style="color:var(--secondary);"><i class="fa-solid fa-file-pdf"></i> Downloadable File Path</label>
+                                <input type="text" id="course_file_url" class="form-control" placeholder="e.g., ./files/course.pdf or https://..." required>
+                            </div>
+                        </div>
+                        <button type="submit" id="btn-add-course" class="btn-main">Publish Course</button>
+                    </form>
                 </div>
             </div>
 
@@ -288,12 +268,10 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // We use 'loading' to prevent false negatives when refreshing the page
         window.currentUser = 'loading';
         window.isAdmin = false;
         window.coursesData = {};
         window.cart = JSON.parse(localStorage.getItem('javagoat_cart')) || {};
-        window.adminQR = 'https://placehold.co/200x200?text=Scan+to+Pay';
         const ADMIN_EMAIL = 'admin@javagoat.com';
 
         async function compressImage(file) {
@@ -325,7 +303,6 @@
             setTimeout(() => { flash.style.display = 'none'; }, 4000);
         }
 
-        // Updated navigate function to support browser History/Hash (Fixes the refresh issue)
         window.navigate = function(view) {
             if(window.location.hash !== `#${view}`) {
                 window.history.pushState(null, null, `#${view}`);
@@ -347,7 +324,6 @@
             window.scrollTo(0, 0);
         }
 
-        // Listen for user clicking back/forward buttons in browser
         window.addEventListener('hashchange', () => {
             const view = window.location.hash.replace('#', '') || 'home';
             navigate(view);
@@ -367,7 +343,6 @@
             localStorage.setItem('javagoat_cart', JSON.stringify(window.cart));
         }
 
-        // AUTHENTICATION
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 window.currentUser = user;
@@ -386,13 +361,10 @@
                 }
 
                 const currentView = window.location.hash.replace('#', '') || 'home';
-                
-                // If they are on the login page but are already logged in, redirect them.
                 if(currentView === 'login' || currentView === 'register') {
                     if (Object.keys(window.cart).length > 0) navigate('payment');
                     else navigate('home');
                 } else {
-                    // Force a re-render of the current page now that we know who the user is
                     if(currentView === 'library') loadLibrary();
                     if(currentView === 'payment') preparePayment();
                 }
@@ -405,26 +377,15 @@
                 document.querySelectorAll('.guest-show').forEach(el => el.style.display = el.tagName === 'LI' ? 'block' : 'flex');
                 
                 const currentView = window.location.hash.replace('#', '') || 'home';
-                if(['library', 'payment', 'admin'].includes(currentView)) {
-                    navigate('login');
-                }
+                if(['library', 'payment', 'admin'].includes(currentView)) navigate('login');
             }
         });
 
-        // DATABASE LISTENERS
         onValue(ref(db, 'courses'), (snapshot) => {
             window.coursesData = snapshot.val() || {};
             const currentView = window.location.hash.replace('#', '') || 'home';
             if(currentView === 'home') renderCourses();
             if(currentView === 'admin') renderAdminCourses();
-        });
-
-        onValue(ref(db, 'settings/admin_qr'), (snapshot) => {
-            if(snapshot.exists()) {
-                window.adminQR = snapshot.val();
-                document.getElementById('admin-qr-preview').src = window.adminQR;
-                document.getElementById('payment-qr').src = window.adminQR;
-            }
         });
 
         onValue(ref(db, 'transactions'), (snapshot) => {
@@ -434,23 +395,22 @@
             if(currentView === 'library') loadLibrary();
         });
 
-        // RENDERING
         function renderCourses() {
             const container = document.getElementById('courses-container');
             if (Object.keys(window.coursesData).length === 0) {
-                container.innerHTML = `<div class="box" style="text-align:center;">No courses yet. Admin needs to add some!</div>`;
+                container.innerHTML = `<div class="box" style="text-align:center;">No courses yet.</div>`;
                 return;
             }
             let html = '<div class="grid">';
             for (const [id, course] of Object.entries(window.coursesData)) {
                 html += `
                 <div class="card">
-                    <img src="${course.image}" class="card-img" alt="Course" onerror="this.src='https://placehold.co/400x200?text=No+Image'">
+                    <img src="${course.image}" class="card-img" onerror="this.src='https://placehold.co/400x200?text=No+Image'">
                     <div class="card-body">
                         <div class="card-title">${course.name}</div>
                         <div class="card-desc">${course.description.substring(0, 60)}...</div>
                         <div class="card-footer">
-                            <span class="price">₹${course.price}</span>
+                            <span class="price">${course.price} Pts</span>
                             <button class="btn-add" onclick="addToCart('${id}')"><i class="fa-solid fa-plus"></i></button>
                         </div>
                     </div>
@@ -488,15 +448,15 @@
                 total += parseFloat(item.data.price);
                 html += `
                 <div style="display:flex; align-items:center; border-bottom:1px solid #eee; padding-bottom:15px; margin-bottom:15px;">
-                    <img src="${item.data.image}" style="width:60px; height:60px; border-radius:8px; object-fit:cover; margin-right:15px;" onerror="this.src='https://placehold.co/100x100?text=Img'">
+                    <img src="${item.data.image}" style="width:60px; height:60px; border-radius:8px; object-fit:cover; margin-right:15px;">
                     <div style="flex-grow:1;">
                         <div style="font-weight:700; font-size:14px;">${item.data.name}</div>
-                        <div style="color:var(--primary); font-weight:800;">₹${item.data.price}</div>
+                        <div style="color:var(--primary); font-weight:800;">${item.data.price} Pts</div>
                     </div>
                     <a onclick="removeFromCart('${id}')" style="color:#EF4444; cursor:pointer;"><i class="fa-solid fa-trash"></i></a>
                 </div>`;
             }
-            html += `<div style="text-align:right; font-size:20px; font-weight:800;">Total: ₹${total}</div>`;
+            html += `<div style="text-align:right; font-size:20px; font-weight:800;">Total: ${total} Pts</div>`;
             if (window.currentUser && window.currentUser !== 'loading') {
                 html += `<a onclick="navigate('payment')" class="btn-main" style="display:block; text-align:center; margin-top:15px;">Proceed to Checkout</a>`;
             } else {
@@ -509,19 +469,30 @@
         }
 
         function preparePayment() {
-            if(window.currentUser === 'loading') return; // Wait for auth
+            if(window.currentUser === 'loading') return; 
             if(!window.currentUser) return navigate('login');
             if(Object.keys(window.cart).length === 0) return navigate('cart');
+            
             document.getElementById('payer_email').value = window.currentUser.email;
+            
             let total = 0;
             for (const item of Object.values(window.cart)) total += parseFloat(item.data.price);
             document.getElementById('payment-total').innerText = total;
+
+            // Generate Dynamic QR Code embedding specified JSON data
+            const qrData = {
+                email: "khanshahidkhanshahid96@gmail.com",
+                name: "java goat",
+                amount: total,
+                txn_name: "Course Purchase - JavaGoat"
+            };
+            
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(JSON.stringify(qrData))}`;
+            document.getElementById('payment-qr').src = qrUrl;
         }
 
         function loadLibrary() {
             const container = document.getElementById('library-container');
-            
-            // Show loading spinner while Firebase checks if user is logged in
             if(window.currentUser === 'loading') {
                 container.innerHTML = `<div class="box" style="text-align:center; padding:50px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:30px; color:var(--primary); margin-bottom:15px;"></i><p>Loading library...</p></div>`;
                 return;
@@ -538,9 +509,7 @@
                     let ids = [];
                     try { ids = JSON.parse(txn.courses_purchased); } catch(e){}
                     ids.forEach(cid => {
-                        if(!purchased[cid] || txn.order_status === 'Confirmed') {
-                            purchased[cid] = txn.order_status;
-                        }
+                        if(!purchased[cid] || txn.order_status === 'Confirmed') purchased[cid] = txn.order_status;
                     });
                 }
             }
@@ -566,7 +535,7 @@
                                     </a>
                                 ` : `
                                     <div style="background:#FEF3C7; color:#92400E; padding:8px; border-radius:8px; font-size:12px; text-align:center; font-weight:bold;">
-                                        <i class="fa-solid fa-clock"></i> Pending Admin Verification
+                                        <i class="fa-solid fa-clock"></i> Pending Verification
                                     </div>
                                 `}
                             </div>
@@ -589,7 +558,6 @@
             const price = parseFloat(document.getElementById('course_price').value);
             const desc = document.getElementById('course_desc').value;
             const fileUrl = document.getElementById('course_file_url').value;
-            
             const imgFile = document.getElementById('course_image_file').files[0];
             let compressedImage = "";
             if(imgFile) compressedImage = await compressImage(imgFile);
@@ -605,30 +573,8 @@
             } catch(err) {
                 showFlash(err.message, 'error');
             } finally {
-                btn.innerHTML = 'Publish Course';
-                btn.disabled = false;
+                btn.innerHTML = 'Publish Course'; btn.disabled = false;
             }
-        });
-
-        document.getElementById('update-qr-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btn-update-qr');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating...';
-            btn.disabled = true;
-
-            const qrFile = document.getElementById('qr_file').files[0];
-            if(qrFile) {
-                try {
-                    const compressedQr = await compressImage(qrFile);
-                    await set(ref(db, 'settings/admin_qr'), compressedQr);
-                    showFlash('QR Code updated.');
-                } catch(err) {
-                    showFlash(err.message, 'error');
-                }
-            }
-            btn.innerHTML = 'Update QR';
-            btn.disabled = false;
-            document.getElementById('update-qr-form').reset();
         });
 
         window.deleteCourse = async function(id) {
@@ -644,21 +590,18 @@
         window.confirmOrder = async function(txnId) {
             try {
                 await update(ref(db, `transactions/${txnId}`), { order_status: 'Confirmed' });
-                showFlash('Order confirmed. The user can now download their files.');
-            } catch(err) {
-                showFlash('Failed. Please check your Firebase Security Rules.', 'error');
-            }
+                showFlash('Order confirmed.');
+            } catch(err) { showFlash('Failed.', 'error'); }
         }
 
         function renderAdminCourses() {
             const table = document.getElementById('admin-courses-table');
             if(Object.keys(window.coursesData).length === 0) return table.innerHTML = "<tr><td>No courses.</td></tr>";
-            let html = '<tr><th>Image</th><th>Name</th><th>File Attachment</th><th>Action</th></tr>';
+            let html = '<tr><th>Image</th><th>Name</th><th>Action</th></tr>';
             for (const [id, course] of Object.entries(window.coursesData)) {
                 html += `<tr>
-                    <td><img src="${course.image}" class="admin-table-img" onerror="this.src='https://placehold.co/100x100?text=Img'"></td>
-                    <td style="font-weight:600;">${course.name}<div style="font-weight:normal; font-size:11px; color:var(--primary);">₹${course.price}</div></td>
-                    <td>${course.file_path ? `<span style="background:#D1FAE5; color:#065F46; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:bold;">File Linked</span>` : `<span style="color:red; font-size:11px;">Missing</span>`}</td>
+                    <td><img src="${course.image}" class="admin-table-img"></td>
+                    <td style="font-weight:600;">${course.name}<div style="font-weight:normal; font-size:11px; color:var(--primary);">${course.price} Pts</div></td>
                     <td><button onclick="deleteCourse('${id}')" style="color:#EF4444; background:none; border:none; cursor:pointer; font-size:16px;"><i class="fa-solid fa-trash"></i></button></td>
                 </tr>`;
             }
@@ -673,16 +616,15 @@
             for (const [id, txn] of txns) {
                 const statusColor = txn.order_status === 'Confirmed' ? '#D1FAE5;color:#065F46' : '#FEF3C7;color:#92400E';
                 html += `<tr>
-                    <td>${txn.email}<div style="font-size:10px; color:#888;">₹${txn.total_amount}</div></td>
+                    <td>${txn.email}<div style="font-size:10px; color:#888;">${txn.total_amount} Pts</div></td>
                     <td style="font-family:monospace;">${txn.transaction_id}</td>
                     <td><span style="background:${statusColor}; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:700;">${txn.order_status}</span></td>
-                    <td>${txn.order_status === 'Pending' ? `<button onclick="confirmOrder('${id}')" style="padding:6px 10px; background:var(--text-dark); color:white; border-radius:6px; border:none; cursor:pointer; font-size:11px; font-weight:bold;">Verify</button>` : `<i class='fa-solid fa-check-double' style='color:#10B981;'></i> Verified`}</td>
+                    <td>${txn.order_status === 'Pending' ? `<button onclick="confirmOrder('${id}')" style="padding:6px 10px; background:var(--text-dark); color:white; border-radius:6px; border:none; cursor:pointer; font-size:11px; font-weight:bold;">Verify</button>` : `<i class='fa-solid fa-check-double' style='color:#10B981;'></i>`}</td>
                 </tr>`;
             }
             table.innerHTML = html;
         }
 
-        // Standard Handlers
         document.getElementById('register-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('reg_email').value;
@@ -717,12 +659,11 @@
                     total_amount: total, order_status: 'Pending', timestamp: Date.now()
                 });
                 window.cart = {}; updateCartUI();
-                showFlash('Payment submitted! Awaiting Admin Verification.');
+                showFlash('Verification submitted! Check My Library.');
                 navigate('library');
             } catch (err) { showFlash('Error submitting payment.', 'error'); }
         });
 
-        // INIT: Start App and Load View Based on URL
         updateCartUI(); 
         const initialView = window.location.hash.replace('#', '') || 'home';
         navigate(initialView);
