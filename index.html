@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>JavaGoat - Premium Courses</title>
-    <!-- Fixes the favicon.ico 404 Error -->
     <link rel="icon" href="data:,">
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -68,7 +67,6 @@
         .flash-message { background: #10B981; color: white; padding: 12px 20px; border-radius: var(--radius-md); margin: 20px 0; font-weight: 600; font-size: 14px; display: none; }
         .flash-message.error { background: #EF4444; }
 
-        /* SPA display utilities */
         .view-section { display: none; }
         .view-section.active { display: block; }
         .auth-show { display: none; }
@@ -100,6 +98,8 @@
                 <li><a onclick="navigate('cart')">Cart (<span id="d-cart">0</span>)</a></li>
                 
                 <!-- Shown when logged in -->
+                <li class="auth-show" id="desktop-user-display" style="background:#F3F4F6; padding:6px 12px; border-radius:20px; font-size:13px; font-weight:700; color:var(--text-dark);"></li>
+                
                 <li class="auth-show"><a onclick="navigate('library')" style="color:var(--primary); font-weight:800;">My Library</a></li>
                 <li class="admin-show"><a onclick="navigate('admin')" style="color:var(--secondary);">Admin</a></li>
                 <li class="auth-show"><a onclick="logout()" class="btn-glass" style="color:var(--text-light); border-color:var(--border-color);">Logout</a></li>
@@ -127,9 +127,7 @@
         <!-- ================= VIEW: CART ================= -->
         <div id="view-cart" class="view-section">
             <h3 class="section-title">Your Cart</h3>
-            <div class="box" id="cart-container">
-                <!-- Cart items rendered here via JS -->
-            </div>
+            <div class="box" id="cart-container"></div>
         </div>
 
         <!-- ================= VIEW: PAYMENT ================= -->
@@ -138,8 +136,7 @@
             <div class="admin-grid">
                 <div class="box" style="text-align:center;">
                     <h4>Scan to Pay</h4>
-                    <!-- Fixed missing image error here -->
-                    <img id="payment-qr" src="https://placehold.co/200x200?text=Scan+to+Pay" style="width:200px; height:200px; border-radius:12px; margin:15px 0;">
+                    <img id="payment-qr" src="https://placehold.co/200x200?text=Scan+to+Pay" style="width:200px; height:200px; border-radius:12px; margin:15px 0; object-fit:cover;">
                     <div style="font-size:24px; font-weight:800; color:var(--primary);">Amount: ₹<span id="payment-total">0</span></div>
                 </div>
                 <div class="box">
@@ -161,6 +158,7 @@
         <div id="view-library" class="view-section">
             <div class="hero" style="background:var(--secondary); padding:20px; margin-top:10px;">
                 <h2 style="font-size:24px; margin:0;"><i class="fa-solid fa-book-open"></i> My Library</h2>
+                <p id="mobile-user-display" style="margin:5px 0 0; font-size:14px; opacity:0.9; font-weight:600;"></p>
             </div>
             <div id="library-container"></div>
         </div>
@@ -180,23 +178,22 @@
             <div id="admin-dashboard" class="admin-subview">
                 <div class="admin-grid">
                     <div class="box">
-                        <h3><i class="fa-solid fa-upload"></i> Add Course (GitHub Links)</h3>
+                        <h3><i class="fa-solid fa-upload"></i> Add Course</h3>
                         <form id="add-course-form">
                             <div class="form-group"><label>Course Title</label><input type="text" id="course_name" class="form-control" required></div>
                             <div class="form-group"><label>Price (₹)</label><input type="number" id="course_price" class="form-control" required></div>
                             <div class="form-group"><label>Short Description</label><textarea id="course_desc" class="form-control" required rows="2"></textarea></div>
                             <div style="background:#F9FAFB; padding:15px; border-radius:12px; margin-bottom:15px; border:1px solid #E5E7EB;">
                                 
-                                <!-- CHANGED TO SIMPLE TEXT URL FOR GITHUB FILE PATH -->
+                                <!-- CHANGED TO FILE UPLOAD -->
                                 <div class="form-group">
-                                    <label style="color:var(--primary);"><i class="fa-solid fa-image"></i> Course Cover Image Path</label>
-                                    <input type="text" id="course_image_url" class="form-control" placeholder="e.g., ./images/cover.png or https://..." required>
+                                    <label style="color:var(--primary);"><i class="fa-solid fa-image"></i> Upload Course Cover Image</label>
+                                    <input type="file" id="course_image_file" class="form-control" accept="image/*" required>
                                 </div>
                                 <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
                                 
-                                <!-- CHANGED TO SIMPLE TEXT URL FOR GITHUB FILE PATH -->
                                 <div class="form-group" style="margin-bottom:0;">
-                                    <label style="color:var(--secondary);"><i class="fa-solid fa-file-pdf"></i> Downloadable File Path (PDF/ZIP)</label>
+                                    <label style="color:var(--secondary);"><i class="fa-solid fa-file-pdf"></i> Downloadable File Path (GitHub PDF/ZIP)</label>
                                     <input type="text" id="course_file_url" class="form-control" placeholder="e.g., ./files/course.pdf or https://..." required>
                                 </div>
                             </div>
@@ -206,12 +203,12 @@
                     <div class="box">
                         <h3>Update QR</h3>
                         <form id="update-qr-form">
-                            <img id="admin-qr-preview" src="https://placehold.co/200x200?text=Scan+to+Pay" style="width:100px; height:100px; display:block; margin:0 auto 10px; border-radius:8px;">
+                            <img id="admin-qr-preview" src="https://placehold.co/200x200?text=Scan+to+Pay" style="width:100px; height:100px; display:block; margin:0 auto 10px; border-radius:8px; object-fit:cover;">
                             
-                            <!-- CHANGED TO SIMPLE TEXT URL -->
+                            <!-- CHANGED TO FILE UPLOAD -->
                             <div class="form-group">
-                                <label>QR Image URL / Path</label>
-                                <input type="text" id="qr_url" class="form-control" placeholder="e.g., ./images/my_qr.png or https://..." required>
+                                <label>Upload New QR Image</label>
+                                <input type="file" id="qr_file" class="form-control" accept="image/*" required>
                             </div>
                             <button type="submit" id="btn-update-qr" class="btn-main" style="background:var(--text-dark);">Update QR</button>
                         </form>
@@ -222,18 +219,14 @@
             <!-- Manage Courses Sub-tab -->
             <div id="admin-courses" class="admin-subview" style="display:none;">
                 <div class="box" style="overflow-x:auto;">
-                    <table id="admin-courses-table">
-                        <!-- Populated via JS -->
-                    </table>
+                    <table id="admin-courses-table"></table>
                 </div>
             </div>
 
             <!-- Orders Sub-tab -->
             <div id="admin-orders" class="admin-subview" style="display:none;">
                 <div class="box" style="overflow-x:auto;">
-                    <table id="admin-orders-table">
-                         <!-- Populated via JS -->
-                    </table>
+                    <table id="admin-orders-table"></table>
                 </div>
             </div>
         </div>
@@ -272,24 +265,17 @@
 
     <nav class="mobile-nav">
         <a onclick="navigate('home')" id="m-nav-home" class="nav-item active"><i class="fa-solid fa-house"></i> Home</a>
-        
-        <!-- Guest View Mobile -->
         <a onclick="navigate('cart')" id="m-nav-cart" class="nav-item guest-show" style="display:flex;"><i class="fa-solid fa-bag-shopping"></i><div class="cart-badge" id="m-cart">0</div> Cart</a>
         <a onclick="navigate('login')" id="m-nav-login" class="nav-item guest-show" style="display:flex;"><i class="fa-solid fa-user"></i> Login</a>
-        
-        <!-- Auth View Mobile -->
         <a onclick="navigate('library')" id="m-nav-library" class="nav-item auth-show"><i class="fa-solid fa-book-open"></i> Library</a>
         <a onclick="navigate('admin')" id="m-nav-admin" class="nav-item admin-show"><i class="fa-solid fa-shield-halved"></i> Admin</a>
         <a onclick="logout()" class="nav-item auth-show"><i class="fa-solid fa-power-off"></i> Logout</a>
     </nav>
 
-    <!-- Firebase SDK Setup as ES Module -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        
-        // NO STORAGE IMPORT. Using RTDB only.
-        import { getDatabase, ref, set, get, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyAfIuTd5Gv3aCRZNnQFa6CL6XzpeLj2UH8",
@@ -304,19 +290,36 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // Global State Variables
         window.currentUser = null;
         window.isAdmin = false;
         window.coursesData = {};
         window.cart = JSON.parse(localStorage.getItem('javagoat_cart')) || {};
         window.adminQR = 'https://placehold.co/200x200?text=Scan+to+Pay';
-
-        // Set admin email requirement
         const ADMIN_EMAIL = 'admin@javagoat.com';
 
-        // ----------------------------------------------------
-        // UTILITIES & ROUTING
-        // ----------------------------------------------------
+        // --- IMAGE COMPRESSION LOGIC TO ALLOW SAVING TO REALTIME DATABASE ---
+        async function compressImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        // Resize large images down to 500px width so Firebase doesn't crash
+                        const MAX_WIDTH = 500;
+                        const scale = img.width > MAX_WIDTH ? (MAX_WIDTH / img.width) : 1;
+                        canvas.width = img.width * scale;
+                        canvas.height = img.height * scale;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7)); // Compress to JPEG
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
         window.showFlash = function(message, type = 'success') {
             const flash = document.getElementById('flash-message');
             flash.innerHTML = `<i class='fa-solid ${type === 'success' ? 'fa-check-circle' : 'fa-triangle-exclamation'}'></i> ${message}`;
@@ -328,10 +331,8 @@
         window.navigate = function(view) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.mobile-nav .nav-item').forEach(el => el.classList.remove('active'));
-            
             const target = document.getElementById(`view-${view}`);
             if(target) target.classList.add('active');
-
             const mNav = document.getElementById(`m-nav-${view}`);
             if(mNav) mNav.classList.add('active');
 
@@ -339,14 +340,12 @@
             if(view === 'cart') renderCart();
             if(view === 'payment') preparePayment();
             if(view === 'library') loadLibrary();
-            
             window.scrollTo(0, 0);
         }
 
         window.showAdminTab = function(tab) {
             document.querySelectorAll('.admin-tabs a').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.admin-subview').forEach(el => el.style.display = 'none');
-            
             document.getElementById(`tab-${tab}`).classList.add('active');
             document.getElementById(`admin-${tab}`).style.display = 'block';
         }
@@ -358,14 +357,16 @@
             localStorage.setItem('javagoat_cart', JSON.stringify(window.cart));
         }
 
-        // ----------------------------------------------------
-        // AUTHENTICATION STATE
-        // ----------------------------------------------------
+        // AUTHENTICATION
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 window.currentUser = user;
                 window.isAdmin = (user.email === ADMIN_EMAIL);
                 
+                // Show Logged In User
+                document.getElementById('desktop-user-display').innerHTML = `<i class="fa-solid fa-user-circle"></i> ${user.email}`;
+                document.getElementById('mobile-user-display').innerText = `Logged in as: ${user.email}`;
+
                 document.querySelectorAll('.auth-show').forEach(el => el.style.display = el.tagName === 'LI' ? 'block' : 'flex');
                 document.querySelectorAll('.guest-show').forEach(el => el.style.display = 'none');
                 
@@ -392,9 +393,7 @@
             }
         });
 
-        // ----------------------------------------------------
-        // DATA FETCHING (Realtime Listeners)
-        // ----------------------------------------------------
+        // REALTIME DATABASE LISTENERS
         onValue(ref(db, 'courses'), (snapshot) => {
             window.coursesData = snapshot.val() || {};
             if(document.getElementById('view-home').classList.contains('active')) renderCourses();
@@ -415,16 +414,13 @@
             if(document.getElementById('view-library').classList.contains('active')) loadLibrary();
         });
 
-        // ----------------------------------------------------
-        // RENDERING FUNCTIONS
-        // ----------------------------------------------------
+        // RENDERING
         function renderCourses() {
             const container = document.getElementById('courses-container');
             if (Object.keys(window.coursesData).length === 0) {
                 container.innerHTML = `<div class="box" style="text-align:center;">No courses yet. Admin needs to add some!</div>`;
                 return;
             }
-
             let html = '<div class="grid">';
             for (const [id, course] of Object.entries(window.coursesData)) {
                 html += `
@@ -447,10 +443,7 @@
         window.addToCart = function(id) {
             const course = window.coursesData[id];
             if(!course) return;
-            
-            if (!window.cart[id]) {
-                window.cart[id] = { quantity: 1, data: course };
-            }
+            if (!window.cart[id]) window.cart[id] = { quantity: 1, data: course };
             updateCartUI();
             showFlash(`${course.name} added to cart!`);
         }
@@ -465,12 +458,10 @@
         function renderCart() {
             const container = document.getElementById('cart-container');
             const keys = Object.keys(window.cart);
-            
             if (keys.length === 0) {
                 container.innerHTML = `<div style="text-align:center; padding: 40px 0;">Cart is empty.</div>`;
                 return;
             }
-
             let total = 0;
             let html = '';
             for (const [id, item] of Object.entries(window.cart)) {
@@ -485,15 +476,12 @@
                     <a onclick="removeFromCart('${id}')" style="color:#EF4444; cursor:pointer;"><i class="fa-solid fa-trash"></i></a>
                 </div>`;
             }
-
             html += `<div style="text-align:right; font-size:20px; font-weight:800;">Total: ₹${total}</div>`;
-            
             if (window.currentUser) {
                 html += `<a onclick="navigate('payment')" class="btn-main" style="display:block; text-align:center; margin-top:15px;">Proceed to Checkout</a>`;
             } else {
-                html += `
-                <div style="background:#FEF2F2; color:#EF4444; padding:15px; border-radius:8px; margin-top:15px; text-align:center;">
-                    <strong>Authentication Required</strong><br>You must log in to purchase files so we can save them to your account.<br><br>
+                html += `<div style="background:#FEF2F2; color:#EF4444; padding:15px; border-radius:8px; margin-top:15px; text-align:center;">
+                    <strong>Authentication Required</strong><br>You must log in to purchase.<br><br>
                     <a onclick="navigate('login')" class="btn-main" style="display:inline-block; width:auto; padding:8px 20px;">Log In to Continue</a>
                 </div>`;
             }
@@ -503,7 +491,6 @@
         function preparePayment() {
             if(!window.currentUser) return navigate('login');
             if(Object.keys(window.cart).length === 0) return navigate('cart');
-            
             document.getElementById('payer_email').value = window.currentUser.email;
             let total = 0;
             for (const item of Object.values(window.cart)) total += parseFloat(item.data.price);
@@ -513,17 +500,11 @@
         function loadLibrary() {
             const container = document.getElementById('library-container');
             if(!window.currentUser || !window.transactionsData) {
-                container.innerHTML = `
-                <div class="box" style="text-align:center; padding:50px;">
-                    <i class="fa-solid fa-box-open" style="font-size:40px; color:#ccc; margin-bottom:15px;"></i>
-                    <p>You haven't bought any courses yet.</p>
-                    <a onclick="navigate('home')" class="btn-main" style="display:inline-block; width:auto; margin-top:15px;">Browse Courses</a>
-                </div>`;
+                container.innerHTML = `<div class="box" style="text-align:center; padding:50px;"><p>You haven't bought any courses yet.</p></div>`;
                 return;
             }
 
             let purchased = {};
-            // Filter user's transactions and aggregate courses
             for(const txn of Object.values(window.transactionsData)) {
                 if(txn.user_id === window.currentUser.uid) {
                     let ids = [];
@@ -537,12 +518,7 @@
             }
 
             if(Object.keys(purchased).length === 0) {
-                container.innerHTML = `
-                <div class="box" style="text-align:center; padding:50px;">
-                    <i class="fa-solid fa-box-open" style="font-size:40px; color:#ccc; margin-bottom:15px;"></i>
-                    <p>You haven't bought any courses yet.</p>
-                    <a onclick="navigate('home')" class="btn-main" style="display:inline-block; width:auto; margin-top:15px;">Browse Courses</a>
-                </div>`;
+                container.innerHTML = `<div class="box" style="text-align:center; padding:50px;"><p>You haven't bought any courses yet.</p></div>`;
                 return;
             }
 
@@ -574,149 +550,7 @@
             container.innerHTML = html;
         }
 
-        // ----------------------------------------------------
-        // ADMIN RENDERING
-        // ----------------------------------------------------
-        function renderAdminCourses() {
-            const table = document.getElementById('admin-courses-table');
-            if(Object.keys(window.coursesData).length === 0) {
-                table.innerHTML = "<tr><td>No courses to manage.</td></tr>";
-                return;
-            }
-
-            let html = '<tr><th>Image</th><th>Name</th><th>File Attachment</th><th>Action</th></tr>';
-            for (const [id, course] of Object.entries(window.coursesData)) {
-                html += `
-                <tr>
-                    <td><img src="${course.image}" class="admin-table-img" onerror="this.src='https://placehold.co/100x100?text=Img'"></td>
-                    <td style="font-weight:600;">
-                        ${course.name}
-                        <div style="font-weight:normal; font-size:11px; color:var(--primary);">₹${course.price}</div>
-                    </td>
-                    <td>
-                        ${course.file_path ? 
-                            `<span style="background:#D1FAE5; color:#065F46; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:bold;"><i class="fa-solid fa-check"></i> File Linked</span>` 
-                            : `<span style="color:red; font-size:11px;">Missing File URL</span>`}
-                    </td>
-                    <td>
-                        <button onclick="deleteCourse('${id}')" style="color:#EF4444; background:none; border:none; cursor:pointer; font-size:16px;"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>`;
-            }
-            table.innerHTML = html;
-        }
-
-        function renderAdminOrders() {
-            const table = document.getElementById('admin-orders-table');
-            if(!window.transactionsData || Object.keys(window.transactionsData).length === 0) {
-                table.innerHTML = "<tr><td>No orders yet.</td></tr>";
-                return;
-            }
-
-            let html = '<tr><th>Customer</th><th>Txn ID</th><th>Status</th><th>Action</th></tr>';
-            // Sort by timestamp desc
-            const txns = Object.entries(window.transactionsData).sort((a,b) => b[1].timestamp - a[1].timestamp);
-            
-            for (const [id, txn] of txns) {
-                const statusColor = txn.order_status === 'Confirmed' ? '#D1FAE5;color:#065F46' : '#FEF3C7;color:#92400E';
-                html += `
-                <tr>
-                    <td>
-                        ${txn.email}
-                        <div style="font-size:10px; color:#888;">₹${txn.total_amount}</div>
-                    </td>
-                    <td style="font-family:monospace;">${txn.transaction_id}</td>
-                    <td>
-                        <span style="background:${statusColor}; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:700;">
-                            ${txn.order_status}
-                        </span>
-                    </td>
-                    <td>
-                        ${txn.order_status === 'Pending' ? `
-                            <button onclick="confirmOrder('${id}')" style="padding:6px 10px; background:var(--text-dark); color:white; border-radius:6px; border:none; cursor:pointer; font-size:11px; font-weight:bold;"><i class="fa-solid fa-check"></i> Verify to Unlock Download</button>
-                        ` : `<i class='fa-solid fa-check-double' style='color:#10B981;'></i> Verified`}
-                    </td>
-                </tr>`;
-            }
-            table.innerHTML = html;
-        }
-
-        // ----------------------------------------------------
-        // EVENT LISTENERS & FORMS
-        // ----------------------------------------------------
-
-        // Register
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('reg_email').value;
-            const pass = document.getElementById('reg_password').value;
-            const confirm = document.getElementById('reg_confirm').value;
-
-            if(pass !== confirm) return showFlash('Passwords do not match.', 'error');
-
-            try {
-                const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-                await set(ref(db, 'users/' + userCred.user.uid), {
-                    email: email,
-                    role: email === ADMIN_EMAIL ? 'admin' : 'user'
-                });
-                showFlash('Registration successful!');
-                navigate('home');
-            } catch (error) {
-                showFlash(error.message, 'error');
-            }
-        });
-
-        // Login
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login_email').value;
-            const pass = document.getElementById('login_password').value;
-            try {
-                await signInWithEmailAndPassword(auth, email, pass);
-                showFlash('Welcome back!');
-            } catch (error) {
-                showFlash('Invalid credentials.', 'error');
-            }
-        });
-
-        // Logout
-        window.logout = async function() {
-            await signOut(auth);
-            navigate('login');
-            showFlash('Logged out successfully.');
-        }
-
-        // Submit Payment
-        document.getElementById('payment-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const txnId = document.getElementById('transaction_id').value;
-            if(!txnId) return showFlash('Transaction ID required', 'error');
-
-            const courseIds = Object.keys(window.cart);
-            let total = 0;
-            courseIds.forEach(id => total += parseFloat(window.cart[id].data.price));
-
-            try {
-                await push(ref(db, 'transactions'), {
-                    user_id: window.currentUser.uid,
-                    email: window.currentUser.email,
-                    transaction_id: txnId,
-                    courses_purchased: JSON.stringify(courseIds),
-                    total_amount: total,
-                    order_status: 'Pending',
-                    timestamp: Date.now()
-                });
-                window.cart = {};
-                updateCartUI();
-                showFlash('Payment submitted! Awaiting Admin Verification.');
-                navigate('library');
-            } catch (err) {
-                showFlash('Error submitting payment.', 'error');
-            }
-        });
-
-        // Admin: Add Course (Using local Github URLs)
+        // ADMIN FORMS & ACTIONS
         document.getElementById('add-course-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-add-course');
@@ -726,17 +560,20 @@
             const name = document.getElementById('course_name').value;
             const price = parseFloat(document.getElementById('course_price').value);
             const desc = document.getElementById('course_desc').value;
-            const imgUrl = document.getElementById('course_image_url').value;
             const fileUrl = document.getElementById('course_file_url').value;
+            
+            // Get Image File and Compress to Base64
+            const imgFile = document.getElementById('course_image_file').files[0];
+            let compressedImage = "";
+            if(imgFile) compressedImage = await compressImage(imgFile);
 
             try {
                 await push(ref(db, 'courses'), {
                     name: name, price: price, description: desc,
-                    image: imgUrl, file_path: fileUrl, created_at: Date.now()
+                    image: compressedImage, file_path: fileUrl, created_at: Date.now()
                 });
-
                 document.getElementById('add-course-form').reset();
-                showFlash('Course linked successfully!');
+                showFlash('Course added successfully!');
                 showAdminTab('courses');
             } catch(err) {
                 showFlash(err.message, 'error');
@@ -746,56 +583,120 @@
             }
         });
 
-        // Admin: Delete Course
-        window.deleteCourse = async function(id) {
-            if(confirm('Are you sure you want to delete this course?')) {
-                try {
-                    await remove(ref(db, `courses/${id}`));
-                    if(window.cart[id]) removeFromCart(id);
-                    showFlash('Course deleted successfully.');
-                } catch(err) {
-                    showFlash('Failed to delete course.', 'error');
-                }
-            }
-        }
-
-        // Admin: Update QR (Using local Github URL)
         document.getElementById('update-qr-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-update-qr');
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating...';
             btn.disabled = true;
 
-            const qrUrl = document.getElementById('qr_url').value;
-
-            try {
-                if(qrUrl) {
-                    await set(ref(db, 'settings/admin_qr'), qrUrl);
+            // Get QR Image File and Compress to Base64
+            const qrFile = document.getElementById('qr_file').files[0];
+            if(qrFile) {
+                try {
+                    const compressedQr = await compressImage(qrFile);
+                    await set(ref(db, 'settings/admin_qr'), compressedQr);
                     showFlash('QR Code updated.');
+                } catch(err) {
+                    showFlash(err.message, 'error');
                 }
-            } catch(err) {
-                showFlash(err.message, 'error');
-            } finally {
-                btn.innerHTML = 'Update QR';
-                btn.disabled = false;
-                document.getElementById('update-qr-form').reset();
             }
+            btn.innerHTML = 'Update QR';
+            btn.disabled = false;
+            document.getElementById('update-qr-form').reset();
         });
 
-        // Admin: Confirm Order
+        window.deleteCourse = async function(id) {
+            if(confirm('Delete this course?')) {
+                try {
+                    await remove(ref(db, `courses/${id}`));
+                    if(window.cart[id]) removeFromCart(id);
+                    showFlash('Course deleted successfully.');
+                } catch(err) { showFlash('Failed to delete.', 'error'); }
+            }
+        }
+
         window.confirmOrder = async function(txnId) {
             try {
                 await update(ref(db, `transactions/${txnId}`), { order_status: 'Confirmed' });
                 showFlash('Order confirmed. The user can now download their files.');
             } catch(err) {
-                showFlash('Failed to confirm order.', 'error');
+                showFlash('Failed. Please check your Firebase Security Rules.', 'error');
             }
         }
 
-        // Initialization
-        updateCartUI();
-        navigate('home');
+        function renderAdminCourses() {
+            const table = document.getElementById('admin-courses-table');
+            if(Object.keys(window.coursesData).length === 0) return table.innerHTML = "<tr><td>No courses.</td></tr>";
+            let html = '<tr><th>Image</th><th>Name</th><th>File Attachment</th><th>Action</th></tr>';
+            for (const [id, course] of Object.entries(window.coursesData)) {
+                html += `<tr>
+                    <td><img src="${course.image}" class="admin-table-img" onerror="this.src='https://placehold.co/100x100?text=Img'"></td>
+                    <td style="font-weight:600;">${course.name}<div style="font-weight:normal; font-size:11px; color:var(--primary);">₹${course.price}</div></td>
+                    <td>${course.file_path ? `<span style="background:#D1FAE5; color:#065F46; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:bold;">File Linked</span>` : `<span style="color:red; font-size:11px;">Missing</span>`}</td>
+                    <td><button onclick="deleteCourse('${id}')" style="color:#EF4444; background:none; border:none; cursor:pointer; font-size:16px;"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>`;
+            }
+            table.innerHTML = html;
+        }
 
+        function renderAdminOrders() {
+            const table = document.getElementById('admin-orders-table');
+            if(!window.transactionsData || Object.keys(window.transactionsData).length === 0) return table.innerHTML = "<tr><td>No orders yet.</td></tr>";
+            let html = '<tr><th>Customer</th><th>Txn ID</th><th>Status</th><th>Action</th></tr>';
+            const txns = Object.entries(window.transactionsData).sort((a,b) => b[1].timestamp - a[1].timestamp);
+            for (const [id, txn] of txns) {
+                const statusColor = txn.order_status === 'Confirmed' ? '#D1FAE5;color:#065F46' : '#FEF3C7;color:#92400E';
+                html += `<tr>
+                    <td>${txn.email}<div style="font-size:10px; color:#888;">₹${txn.total_amount}</div></td>
+                    <td style="font-family:monospace;">${txn.transaction_id}</td>
+                    <td><span style="background:${statusColor}; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:700;">${txn.order_status}</span></td>
+                    <td>${txn.order_status === 'Pending' ? `<button onclick="confirmOrder('${id}')" style="padding:6px 10px; background:var(--text-dark); color:white; border-radius:6px; border:none; cursor:pointer; font-size:11px; font-weight:bold;">Verify</button>` : `<i class='fa-solid fa-check-double' style='color:#10B981;'></i> Verified`}</td>
+                </tr>`;
+            }
+            table.innerHTML = html;
+        }
+
+        // Standard Handlers
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('reg_email').value;
+            const pass = document.getElementById('reg_password').value;
+            if(pass !== document.getElementById('reg_confirm').value) return showFlash('Passwords do not match.', 'error');
+            try {
+                const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+                await set(ref(db, 'users/' + userCred.user.uid), { email: email, role: email === ADMIN_EMAIL ? 'admin' : 'user' });
+                showFlash('Registration successful!'); navigate('home');
+            } catch (error) { showFlash(error.message, 'error'); }
+        });
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await signInWithEmailAndPassword(auth, document.getElementById('login_email').value, document.getElementById('login_password').value);
+                showFlash('Welcome back!');
+            } catch (error) { showFlash('Invalid credentials.', 'error'); }
+        });
+
+        window.logout = async function() { await signOut(auth); navigate('login'); showFlash('Logged out.'); }
+
+        document.getElementById('payment-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const txnId = document.getElementById('transaction_id').value;
+            const courseIds = Object.keys(window.cart);
+            let total = 0; courseIds.forEach(id => total += parseFloat(window.cart[id].data.price));
+            try {
+                await push(ref(db, 'transactions'), {
+                    user_id: window.currentUser.uid, email: window.currentUser.email,
+                    transaction_id: txnId, courses_purchased: JSON.stringify(courseIds),
+                    total_amount: total, order_status: 'Pending', timestamp: Date.now()
+                });
+                window.cart = {}; updateCartUI();
+                showFlash('Payment submitted! Awaiting Admin Verification.');
+                navigate('library');
+            } catch (err) { showFlash('Error submitting payment.', 'error'); }
+        });
+
+        updateCartUI(); navigate('home');
     </script>
 </body>
 </html>
