@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>JavaGoat - Premium Courses</title>
+    <!-- Fixes the favicon.ico 404 Error -->
+    <link rel="icon" href="data:,">
+    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -135,7 +138,8 @@
             <div class="admin-grid">
                 <div class="box" style="text-align:center;">
                     <h4>Scan to Pay</h4>
-                    <img id="payment-qr" src="https://via.placeholder.com/200?text=Loading..." style="width:200px; height:200px; border-radius:12px; margin:15px 0;">
+                    <!-- Fixed missing image error here -->
+                    <img id="payment-qr" src="https://placehold.co/200x200?text=Scan+to+Pay" style="width:200px; height:200px; border-radius:12px; margin:15px 0;">
                     <div style="font-size:24px; font-weight:800; color:var(--primary);">Amount: ₹<span id="payment-total">0</span></div>
                 </div>
                 <div class="box">
@@ -176,21 +180,24 @@
             <div id="admin-dashboard" class="admin-subview">
                 <div class="admin-grid">
                     <div class="box">
-                        <h3><i class="fa-solid fa-upload"></i> Upload Course</h3>
+                        <h3><i class="fa-solid fa-upload"></i> Add Course (GitHub Links)</h3>
                         <form id="add-course-form">
                             <div class="form-group"><label>Course Title</label><input type="text" id="course_name" class="form-control" required></div>
                             <div class="form-group"><label>Price (₹)</label><input type="number" id="course_price" class="form-control" required></div>
                             <div class="form-group"><label>Short Description</label><textarea id="course_desc" class="form-control" required rows="2"></textarea></div>
                             <div style="background:#F9FAFB; padding:15px; border-radius:12px; margin-bottom:15px; border:1px solid #E5E7EB;">
+                                
+                                <!-- CHANGED TO SIMPLE TEXT URL FOR GITHUB FILE PATH -->
                                 <div class="form-group">
-                                    <label style="color:var(--primary);"><i class="fa-solid fa-image"></i> Course Cover Image</label>
-                                    <input type="file" id="course_image_file" class="form-control" accept="image/*" style="font-size:12px;">
-                                    <input type="text" id="course_image_url" class="form-control" placeholder="Or paste external image URL" style="margin-top:5px;">
+                                    <label style="color:var(--primary);"><i class="fa-solid fa-image"></i> Course Cover Image Path</label>
+                                    <input type="text" id="course_image_url" class="form-control" placeholder="e.g., ./images/cover.png or https://..." required>
                                 </div>
                                 <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
+                                
+                                <!-- CHANGED TO SIMPLE TEXT URL FOR GITHUB FILE PATH -->
                                 <div class="form-group" style="margin-bottom:0;">
-                                    <label style="color:var(--secondary);"><i class="fa-solid fa-file-pdf"></i> Downloadable File (PDF/ZIP)</label>
-                                    <input type="file" id="course_file" class="form-control" accept=".pdf,.zip,.rar" style="font-size:12px;">
+                                    <label style="color:var(--secondary);"><i class="fa-solid fa-file-pdf"></i> Downloadable File Path (PDF/ZIP)</label>
+                                    <input type="text" id="course_file_url" class="form-control" placeholder="e.g., ./files/course.pdf or https://..." required>
                                 </div>
                             </div>
                             <button type="submit" id="btn-add-course" class="btn-main">Publish Course</button>
@@ -199,10 +206,12 @@
                     <div class="box">
                         <h3>Update QR</h3>
                         <form id="update-qr-form">
-                            <img id="admin-qr-preview" src="" style="width:100px; height:100px; display:block; margin:0 auto 10px; border-radius:8px;">
-                            <div class="form-group"><label>QR Upload / URL</label>
-                                <input type="file" id="qr_file" class="form-control" accept="image/*">
-                                <input type="text" id="qr_url" class="form-control" placeholder="Or QR URL" style="margin-top:5px;">
+                            <img id="admin-qr-preview" src="https://placehold.co/200x200?text=Scan+to+Pay" style="width:100px; height:100px; display:block; margin:0 auto 10px; border-radius:8px;">
+                            
+                            <!-- CHANGED TO SIMPLE TEXT URL -->
+                            <div class="form-group">
+                                <label>QR Image URL / Path</label>
+                                <input type="text" id="qr_url" class="form-control" placeholder="e.g., ./images/my_qr.png or https://..." required>
                             </div>
                             <button type="submit" id="btn-update-qr" class="btn-main" style="background:var(--text-dark);">Update QR</button>
                         </form>
@@ -278,15 +287,15 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        
+        // NO STORAGE IMPORT. Using RTDB only.
         import { getDatabase, ref, set, get, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
-        import { getStorage, ref as sRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-storage.js";
-
+        
         const firebaseConfig = {
             apiKey: "AIzaSyAfIuTd5Gv3aCRZNnQFa6CL6XzpeLj2UH8",
             authDomain: "videocall-c3445.firebaseapp.com",
             databaseURL: "https://videocall-c3445-default-rtdb.firebaseio.com",
             projectId: "videocall-c3445",
-            storageBucket: "videocall-c3445.firebasestorage.app",
             messagingSenderId: "462833246110",
             appId: "1:462833246110:web:b7c2abaeb309771299008f"
         };
@@ -294,14 +303,13 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-        const storage = getStorage(app);
 
         // Global State Variables
         window.currentUser = null;
         window.isAdmin = false;
         window.coursesData = {};
         window.cart = JSON.parse(localStorage.getItem('javagoat_cart')) || {};
-        window.adminQR = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=Set%20QR%20in%20Admin';
+        window.adminQR = 'https://placehold.co/200x200?text=Scan+to+Pay';
 
         // Set admin email requirement
         const ADMIN_EMAIL = 'admin@javagoat.com';
@@ -421,7 +429,7 @@
             for (const [id, course] of Object.entries(window.coursesData)) {
                 html += `
                 <div class="card">
-                    <img src="${course.image}" class="card-img" alt="Course">
+                    <img src="${course.image}" class="card-img" alt="Course" onerror="this.src='https://placehold.co/400x200?text=No+Image'">
                     <div class="card-body">
                         <div class="card-title">${course.name}</div>
                         <div class="card-desc">${course.description.substring(0, 60)}...</div>
@@ -469,7 +477,7 @@
                 total += parseFloat(item.data.price);
                 html += `
                 <div style="display:flex; align-items:center; border-bottom:1px solid #eee; padding-bottom:15px; margin-bottom:15px;">
-                    <img src="${item.data.image}" style="width:60px; height:60px; border-radius:8px; object-fit:cover; margin-right:15px;">
+                    <img src="${item.data.image}" style="width:60px; height:60px; border-radius:8px; object-fit:cover; margin-right:15px;" onerror="this.src='https://placehold.co/100x100?text=Img'">
                     <div style="flex-grow:1;">
                         <div style="font-weight:700; font-size:14px;">${item.data.name}</div>
                         <div style="color:var(--primary); font-weight:800;">₹${item.data.price}</div>
@@ -544,7 +552,7 @@
                 if(c_data) {
                     html += `
                     <div class="card">
-                        <img src="${c_data.image}" class="card-img" style="height:140px;">
+                        <img src="${c_data.image}" class="card-img" style="height:140px;" onerror="this.src='https://placehold.co/400x200?text=No+Image'">
                         <div class="card-body">
                             <div class="card-title">${c_data.name}</div>
                             <div style="margin-top:auto; padding-top:10px;">
@@ -580,15 +588,15 @@
             for (const [id, course] of Object.entries(window.coursesData)) {
                 html += `
                 <tr>
-                    <td><img src="${course.image}" class="admin-table-img"></td>
+                    <td><img src="${course.image}" class="admin-table-img" onerror="this.src='https://placehold.co/100x100?text=Img'"></td>
                     <td style="font-weight:600;">
                         ${course.name}
                         <div style="font-weight:normal; font-size:11px; color:var(--primary);">₹${course.price}</div>
                     </td>
                     <td>
                         ${course.file_path ? 
-                            `<span style="background:#D1FAE5; color:#065F46; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:bold;"><i class="fa-solid fa-check"></i> File Uploaded</span>` 
-                            : `<span style="color:red; font-size:11px;">Missing File</span>`}
+                            `<span style="background:#D1FAE5; color:#065F46; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:bold;"><i class="fa-solid fa-check"></i> File Linked</span>` 
+                            : `<span style="color:red; font-size:11px;">Missing File URL</span>`}
                     </td>
                     <td>
                         <button onclick="deleteCourse('${id}')" style="color:#EF4444; background:none; border:none; cursor:pointer; font-size:16px;"><i class="fa-solid fa-trash"></i></button>
@@ -708,47 +716,27 @@
             }
         });
 
-        // Admin: Add Course
+        // Admin: Add Course (Using local Github URLs)
         document.getElementById('add-course-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-add-course');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
             btn.disabled = true;
 
             const name = document.getElementById('course_name').value;
             const price = parseFloat(document.getElementById('course_price').value);
             const desc = document.getElementById('course_desc').value;
-            let imgUrl = document.getElementById('course_image_url').value;
-            let fileUrl = '';
+            const imgUrl = document.getElementById('course_image_url').value;
+            const fileUrl = document.getElementById('course_file_url').value;
 
             try {
-                // Upload image if file selected
-                const imgFile = document.getElementById('course_image_file').files[0];
-                if(imgFile) {
-                    const imgRef = sRef(storage, `images/${Date.now()}_${imgFile.name}`);
-                    await uploadBytes(imgRef, imgFile);
-                    imgUrl = await getDownloadURL(imgRef);
-                }
-
-                // Upload course file
-                const docFile = document.getElementById('course_file').files[0];
-                if(docFile) {
-                    const docRef = sRef(storage, `files/${Date.now()}_${docFile.name}`);
-                    await uploadBytes(docRef, docFile);
-                    fileUrl = await getDownloadURL(docRef);
-                }
-
-                if(!imgUrl || !fileUrl) {
-                    throw new Error("Both Image and Course File are required.");
-                }
-
                 await push(ref(db, 'courses'), {
                     name: name, price: price, description: desc,
                     image: imgUrl, file_path: fileUrl, created_at: Date.now()
                 });
 
                 document.getElementById('add-course-form').reset();
-                showFlash('Course & File uploaded successfully!');
+                showFlash('Course linked successfully!');
                 showAdminTab('courses');
             } catch(err) {
                 showFlash(err.message, 'error');
@@ -771,24 +759,18 @@
             }
         }
 
-        // Admin: Update QR
+        // Admin: Update QR (Using local Github URL)
         document.getElementById('update-qr-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-update-qr');
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating...';
             btn.disabled = true;
 
-            let finalUrl = document.getElementById('qr_url').value;
-            const qrFile = document.getElementById('qr_file').files[0];
+            const qrUrl = document.getElementById('qr_url').value;
 
             try {
-                if(qrFile) {
-                    const qrRef = sRef(storage, `qr/${Date.now()}_${qrFile.name}`);
-                    await uploadBytes(qrRef, qrFile);
-                    finalUrl = await getDownloadURL(qrRef);
-                }
-                if(finalUrl) {
-                    await set(ref(db, 'settings/admin_qr'), finalUrl);
+                if(qrUrl) {
+                    await set(ref(db, 'settings/admin_qr'), qrUrl);
                     showFlash('QR Code updated.');
                 }
             } catch(err) {
