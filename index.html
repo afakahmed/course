@@ -185,7 +185,6 @@
                             <div class="form-group"><label>Short Description</label><textarea id="course_desc" class="form-control" required rows="2"></textarea></div>
                             <div style="background:#F9FAFB; padding:15px; border-radius:12px; margin-bottom:15px; border:1px solid #E5E7EB;">
                                 
-                                <!-- CHANGED TO FILE UPLOAD -->
                                 <div class="form-group">
                                     <label style="color:var(--primary);"><i class="fa-solid fa-image"></i> Upload Course Cover Image</label>
                                     <input type="file" id="course_image_file" class="form-control" accept="image/*" required>
@@ -205,7 +204,6 @@
                         <form id="update-qr-form">
                             <img id="admin-qr-preview" src="https://placehold.co/200x200?text=Scan+to+Pay" style="width:100px; height:100px; display:block; margin:0 auto 10px; border-radius:8px; object-fit:cover;">
                             
-                            <!-- CHANGED TO FILE UPLOAD -->
                             <div class="form-group">
                                 <label>Upload New QR Image</label>
                                 <input type="file" id="qr_file" class="form-control" accept="image/*" required>
@@ -290,14 +288,14 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        window.currentUser = null;
+        // We use 'loading' to prevent false negatives when refreshing the page
+        window.currentUser = 'loading';
         window.isAdmin = false;
         window.coursesData = {};
         window.cart = JSON.parse(localStorage.getItem('javagoat_cart')) || {};
         window.adminQR = 'https://placehold.co/200x200?text=Scan+to+Pay';
         const ADMIN_EMAIL = 'admin@javagoat.com';
 
-        // --- IMAGE COMPRESSION LOGIC TO ALLOW SAVING TO REALTIME DATABASE ---
         async function compressImage(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -305,14 +303,13 @@
                     const img = new Image();
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        // Resize large images down to 500px width so Firebase doesn't crash
                         const MAX_WIDTH = 500;
                         const scale = img.width > MAX_WIDTH ? (MAX_WIDTH / img.width) : 1;
                         canvas.width = img.width * scale;
                         canvas.height = img.height * scale;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.7)); // Compress to JPEG
+                        resolve(canvas.toDataURL('image/jpeg', 0.7)); 
                     };
                     img.src = e.target.result;
                 };
@@ -328,11 +325,18 @@
             setTimeout(() => { flash.style.display = 'none'; }, 4000);
         }
 
+        // Updated navigate function to support browser History/Hash (Fixes the refresh issue)
         window.navigate = function(view) {
+            if(window.location.hash !== `#${view}`) {
+                window.history.pushState(null, null, `#${view}`);
+            }
+
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.mobile-nav .nav-item').forEach(el => el.classList.remove('active'));
+            
             const target = document.getElementById(`view-${view}`);
             if(target) target.classList.add('active');
+            
             const mNav = document.getElementById(`m-nav-${view}`);
             if(mNav) mNav.classList.add('active');
 
@@ -342,6 +346,12 @@
             if(view === 'library') loadLibrary();
             window.scrollTo(0, 0);
         }
+
+        // Listen for user clicking back/forward buttons in browser
+        window.addEventListener('hashchange', () => {
+            const view = window.location.hash.replace('#', '') || 'home';
+            navigate(view);
+        });
 
         window.showAdminTab = function(tab) {
             document.querySelectorAll('.admin-tabs a').forEach(el => el.classList.remove('active'));
@@ -363,7 +373,6 @@
                 window.currentUser = user;
                 window.isAdmin = (user.email === ADMIN_EMAIL);
                 
-                // Show Logged In User
                 document.getElementById('desktop-user-display').innerHTML = `<i class="fa-solid fa-user-circle"></i> ${user.email}`;
                 document.getElementById('mobile-user-display').innerText = `Logged in as: ${user.email}`;
 
@@ -376,10 +385,18 @@
                     document.querySelectorAll('.admin-show').forEach(el => el.style.display = 'none');
                 }
 
-                if(document.getElementById('view-login').classList.contains('active') || document.getElementById('view-register').classList.contains('active')) {
+                const currentView = window.location.hash.replace('#', '') || 'home';
+                
+                // If they are on the login page but are already logged in, redirect them.
+                if(currentView === 'login' || currentView === 'register') {
                     if (Object.keys(window.cart).length > 0) navigate('payment');
                     else navigate('home');
+                } else {
+                    // Force a re-render of the current page now that we know who the user is
+                    if(currentView === 'library') loadLibrary();
+                    if(currentView === 'payment') preparePayment();
                 }
+
             } else {
                 window.currentUser = null;
                 window.isAdmin = false;
@@ -387,17 +404,19 @@
                 document.querySelectorAll('.admin-show').forEach(el => el.style.display = 'none');
                 document.querySelectorAll('.guest-show').forEach(el => el.style.display = el.tagName === 'LI' ? 'block' : 'flex');
                 
-                if(['library', 'payment', 'admin'].includes(document.querySelector('.view-section.active')?.id.replace('view-',''))) {
+                const currentView = window.location.hash.replace('#', '') || 'home';
+                if(['library', 'payment', 'admin'].includes(currentView)) {
                     navigate('login');
                 }
             }
         });
 
-        // REALTIME DATABASE LISTENERS
+        // DATABASE LISTENERS
         onValue(ref(db, 'courses'), (snapshot) => {
             window.coursesData = snapshot.val() || {};
-            if(document.getElementById('view-home').classList.contains('active')) renderCourses();
-            if(document.getElementById('view-admin').classList.contains('active')) renderAdminCourses();
+            const currentView = window.location.hash.replace('#', '') || 'home';
+            if(currentView === 'home') renderCourses();
+            if(currentView === 'admin') renderAdminCourses();
         });
 
         onValue(ref(db, 'settings/admin_qr'), (snapshot) => {
@@ -410,8 +429,9 @@
 
         onValue(ref(db, 'transactions'), (snapshot) => {
             window.transactionsData = snapshot.val() || {};
-            if(document.getElementById('view-admin').classList.contains('active')) renderAdminOrders();
-            if(document.getElementById('view-library').classList.contains('active')) loadLibrary();
+            const currentView = window.location.hash.replace('#', '') || 'home';
+            if(currentView === 'admin') renderAdminOrders();
+            if(currentView === 'library') loadLibrary();
         });
 
         // RENDERING
@@ -477,7 +497,7 @@
                 </div>`;
             }
             html += `<div style="text-align:right; font-size:20px; font-weight:800;">Total: ₹${total}</div>`;
-            if (window.currentUser) {
+            if (window.currentUser && window.currentUser !== 'loading') {
                 html += `<a onclick="navigate('payment')" class="btn-main" style="display:block; text-align:center; margin-top:15px;">Proceed to Checkout</a>`;
             } else {
                 html += `<div style="background:#FEF2F2; color:#EF4444; padding:15px; border-radius:8px; margin-top:15px; text-align:center;">
@@ -489,6 +509,7 @@
         }
 
         function preparePayment() {
+            if(window.currentUser === 'loading') return; // Wait for auth
             if(!window.currentUser) return navigate('login');
             if(Object.keys(window.cart).length === 0) return navigate('cart');
             document.getElementById('payer_email').value = window.currentUser.email;
@@ -499,6 +520,13 @@
 
         function loadLibrary() {
             const container = document.getElementById('library-container');
+            
+            // Show loading spinner while Firebase checks if user is logged in
+            if(window.currentUser === 'loading') {
+                container.innerHTML = `<div class="box" style="text-align:center; padding:50px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:30px; color:var(--primary); margin-bottom:15px;"></i><p>Loading library...</p></div>`;
+                return;
+            }
+
             if(!window.currentUser || !window.transactionsData) {
                 container.innerHTML = `<div class="box" style="text-align:center; padding:50px;"><p>You haven't bought any courses yet.</p></div>`;
                 return;
@@ -562,7 +590,6 @@
             const desc = document.getElementById('course_desc').value;
             const fileUrl = document.getElementById('course_file_url').value;
             
-            // Get Image File and Compress to Base64
             const imgFile = document.getElementById('course_image_file').files[0];
             let compressedImage = "";
             if(imgFile) compressedImage = await compressImage(imgFile);
@@ -589,7 +616,6 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Updating...';
             btn.disabled = true;
 
-            // Get QR Image File and Compress to Base64
             const qrFile = document.getElementById('qr_file').files[0];
             if(qrFile) {
                 try {
@@ -696,7 +722,10 @@
             } catch (err) { showFlash('Error submitting payment.', 'error'); }
         });
 
-        updateCartUI(); navigate('home');
+        // INIT: Start App and Load View Based on URL
+        updateCartUI(); 
+        const initialView = window.location.hash.replace('#', '') || 'home';
+        navigate(initialView);
     </script>
 </body>
 </html>
