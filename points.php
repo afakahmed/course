@@ -3,7 +3,7 @@
 $smtp_host = 'smtp.gmail.com'; 
 $smtp_port = 465; 
 $smtp_user = 'saiyedkhan207@gmail.com'; 
-$smtp_pass = 'cscv jpsk gbnh fmxl';          
+$smtp_pass = 'cscvjpskgbnhfmxl';          
 // ──────────────────────────────────────────────────────────────────────────
 
 function send_smtp_mail($to, $subject, $body, $user, $pass, $host, $port, $from_name) {
