@@ -2,8 +2,8 @@
 // ─── SMTP CONFIGURATION ─────────────────────────
 $smtp_host = 'smtp.gmail.com'; 
 $smtp_port = 465; 
-$smtp_user = 'saiyedkhan207@gmail.com'; 
-$smtp_pass = 'cscvjpskgbnhfmxl';          
+$smtp_user = 'your email address'; 
+$smtp_pass = 'your 16 digit password';          
 // ──────────────────────────────────────────────────────────────────────────
 
 function send_smtp_mail($to, $subject, $body, $user, $pass, $host, $port, $from_name) {
